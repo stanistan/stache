@@ -5,8 +5,8 @@
 ;; Constants..............................................................................
 
 (def config-default
-  [:path-to "templates"
-   :suffix ".mustache"])
+  {:path-to "templates"
+   :suffix ".mustache"})
 
 (def partial-pattern #"\{\{\>([\w\/-]+)\}\}") ; the pattern used to define partials
 
@@ -29,17 +29,12 @@
 (defn reset-config
   "Resets the settings to defaults."
   []
-  (apply config config-default))
+  (apply config (flatten (vec config-default))))
 
 ; set up default bindings
 (reset-config)
 
 ;; Helpers................................................................................
-
-(defn key-to-keyword
-  "Makes a hash map with keyword keys from string keys."
-  [h]
-  (reduce merge (map #(hash-map (keyword (first %)) (second %)) h)))
 
 (defn not-nil? [n]
   (not (nil? n)))
@@ -54,8 +49,9 @@
   [m]
   (str path-to "/" m suffix))
 
-(defn get-template [m]
+(defn get-template
   "Gets the contents of the mustache file"
+  [m]
   (let [p (mustache-path m) r (io/resource p)]
     (if (nil? r)
       (throw (Exception. (str "mustache not found: " m " at path: " p)))
@@ -64,25 +60,22 @@
 ;; Partials Utilities.....................................................................
 
 (defn find-partials
-  "Gets the defined partials in the current mustache string."
+  "Gets the defined partials in the current mustache string. Returns vector."
   [m]
-  (map #(second %) (re-seq partial-pattern m)))
-
-(defn- get-partials-content
-  "Gets a map of {partial-name parial-content} recursively"
-  [m partials]
-  (let [p (find-partials m)
-        found (if (empty p) []
-                (filter not-nil?
-                  (map #(if (get partials p) nil {p (get-template p)}) p)))
-        all (merge partials (reduce merge found))]
-    (reduce merge (map #(get-partials-content (second (first %)) all) found))))
+  (let [f (mapv #(keyword (second %)) (re-seq partial-pattern m))]
+    (println f)
+    f))
 
 (defn get-partials
-  "Gets a map of partials in the given mustache, returns {:partial-name partial-content}"
+  "Gets a map of {:partial-name partial-content} recursively."
   ([m] (get-partials m {}))
   ([m partials]
-    (key-to-keyword (get-partials-content m partials))))
+    (let [p (find-partials m)
+          gp (fn [k] (if (get partials k) nil {k (get-template (name k))}))
+          found (if (empty? p) [] (filter not-nil? (map gp p)))
+          all (merge partials (reduce merge found))]
+      (reduce merge all (map #(get-partials (second (first %)) all) found)))))
+
 
 ;; Mustache Utilities.....................................................................
 

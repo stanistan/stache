@@ -62,9 +62,7 @@
 (defn find-partials
   "Gets the defined partials in the current mustache string. Returns vector."
   [m]
-  (let [f (mapv #(keyword (second %)) (re-seq partial-pattern m))]
-    (println f)
-    f))
+  (mapv #(keyword (second %)) (re-seq partial-pattern m)))
 
 (defn get-partials
   "Gets a map of {:partial-name partial-content} recursively."

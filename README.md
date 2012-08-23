@@ -6,7 +6,7 @@ Uses the [clostache](https://github.com/fhd/clostache) library.
 
 Stache automatically finds partials in your markup.
 
-*Note:* This needs to be fixed soon, with real usage.
+*Note:* See tests usage.
 
 ## Usage
 
@@ -16,6 +16,12 @@ Stache automatically finds partials in your markup.
 (render-template "Hi, {{name}}." {:name "Stan"})
 ;; "Hi, Stan."
 ```
+
+### Todo:
+
+- Fix loading of partials with relative paths to the main template.
+- Write more tests for changing configs and usage.
+- Disallow `/` in partial names.
 
 ## License
 

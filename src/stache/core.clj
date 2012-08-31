@@ -1,6 +1,7 @@
 (ns stache.core
   (:use [clostache.parser :as parser])
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]))
 
 ;; Constants..............................................................................
 
@@ -36,6 +37,10 @@
 
 ;; Helpers................................................................................
 
+(defn prep-path
+  [s]
+  (string/join "/" (filter #(not (empty? %)) (string/split s #"\/"))))
+
 (defn not-nil?
   [n]
   (not (nil? n)))
@@ -44,20 +49,32 @@
   [rgx s]
   (not-nil? (re-find rgx s)))
 
+(defmacro prr
+  [& args]
+  `(let [r# ~@args]
+    (println r#)
+    r#))
+
 ;; Directory Utitlies.....................................................................
 
 (defn mustache-path
   "Gets a resource path to the mustache file"
-  [m]
-  (str path-to-templates "/" m template-suffix))
+  ([m] (mustache-path m ""))
+  ([m incpath]
+    (let [p (string/join "/" (map prep-path [path-to-templates incpath]))]
+      (prep-path (str p "/" m template-suffix)))))
 
 (defn get-template
   "Gets the contents of the mustache file"
-  [m]
-  (let [p (mustache-path m) r (io/resource p)]
-    (if (nil? r)
-      (throw (Exception. (str "mustache not found: " m " at path: " p)))
-      (slurp r))))
+  ([m] (get-template m ""))
+  ([m incpath]
+    (let [incpath (if (coll? incpath) incpath [incpath])]
+      (loop [p (first incpath) r (rest incpath)]
+        (let [mp (mustache-path m p) rs (io/resource mp)]
+          (cond
+            (not-nil? rs) (slurp rs)
+            (empty? r) (throw (Exception. (str "Mustache template not found: " m " in: " incpath)))
+            :else (recur (first r) (rest r))))))))
 
 ;; Partials Utilities.....................................................................
 
@@ -68,10 +85,11 @@
 
 (defn get-partials
   "Gets a map of {:partial-name partial-content} recursively."
-  ([m] (get-partials m {}))
-  ([m partials]
+  ([m] (get-partials m {} ""))
+  ([m partials] (get-partials m partials ""))
+  ([m partials incpath]
     (let [p (find-partials m)
-          gp (fn [k] (if (get partials k) nil {k (get-template (name k))}))
+          gp (fn [k] (if (get partials k) nil {k (get-template (name k) incpath)}))
           found (if (empty? p) [] (filter not-nil? (map gp p)))
           all (merge partials (reduce merge found))]
       (reduce merge all (map #(get-partials (second (first %)) all) found)))))
@@ -90,7 +108,7 @@
   "Render the given mustache template with the data given.
    Finds partials automatically unless they are specified using:
    (render-template m data :partials {:name partial})"
-  [m data & {:keys [partials]}]
+  [m data & {:keys [partials incpath]}]
   (let [m (if (mustache? m) m (get-template m))
-        partials (get-partials m (or partials {}))]
+        partials (get-partials m (or partials {}) (or incpath ""))]
     (parser/render m data partials)))

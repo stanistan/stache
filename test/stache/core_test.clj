@@ -43,7 +43,5 @@
     (render-template "ps" {:name "Stan"})
       "Oh You. Hi, Stan.\n\n")) ; empty lines at the end of files
 
-  ;; this test currently fails.
-  ;; TODO: fix loading of partials with incpaths
-  (let [a (try (render-template "i/t" {}) (catch Exception e))]
+  (let [a (try (render-template "i/t" {} :incpath "i") (catch Exception e))]
     (is (= a "All good in the hood.\n\n"))))

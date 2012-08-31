@@ -1,101 +1,8 @@
 (ns stache.core
-  (:use [clostache.parser :as parser])
-  (:require [clojure.java.io :as io]
-            [clojure.string :as string]))
-
-;; Constants..............................................................................
-
-(def config-default
-  "Default configuration options for what we're looking for, and where"
-  {:path-to "templates"
-   :suffix ".mustache"})
-
-(def partial-pattern
-  "The pattern used to define partials"
-  #"\{\{\>([\w\/-]+)\}\}")
-
-;; Settings and Configs...................................................................
-
-(declare path-to-templates) ; the resource path where mustache templates are
-(declare template-suffix)  ; suffix used for the files
-
-(defn config
-  "Bind values to path-to or suffix.
-   Usage: (config :path-to \"path/to/mustaches/\" :suffix \".m\")"
-  [& {:keys [path-to suffix]}]
-  (do
-    (and path-to (def path-to-templates path-to))
-    (and suffix (def template-suffix suffix))))
-
-(defn reset-config
-  "Resets the settings to defaults."
-  []
-  (apply config (flatten (vec config-default))))
-
-; set up default bindings
-(reset-config)
-
-;; Helpers................................................................................
-
-(defn prep-path
-  [s]
-  (string/join "/" (filter #(not (empty? %)) (string/split s #"\/"))))
-
-(defn not-nil?
-  [n]
-  (not (nil? n)))
-
-(defn has-match
-  [rgx s]
-  (not-nil? (re-find rgx s)))
-
-(defmacro prr
-  [& args]
-  `(let [r# ~@args]
-    (println r#)
-    r#))
-
-;; Directory Utitlies.....................................................................
-
-(defn mustache-path
-  "Gets a resource path to the mustache file"
-  ([m] (mustache-path m ""))
-  ([m incpath]
-    (let [p (string/join "/" (map prep-path [path-to-templates incpath]))]
-      (prep-path (str p "/" m template-suffix)))))
-
-(defn get-template
-  "Gets the contents of the mustache file"
-  ([m] (get-template m ""))
-  ([m incpath]
-    (let [incpath (if (coll? incpath) incpath [incpath])]
-      (loop [p (first incpath) r (rest incpath)]
-        (let [mp (mustache-path m p) rs (io/resource mp)]
-          (cond
-            (not-nil? rs) (slurp rs)
-            (empty? r) (throw (Exception. (str "Mustache template not found: " m " in: " incpath)))
-            :else (recur (first r) (rest r))))))))
-
-;; Partials Utilities.....................................................................
-
-(defn find-partials
-  "Gets the defined partials in the current mustache string. Returns vector."
-  [m]
-  (mapv #(keyword (second %)) (re-seq partial-pattern m)))
-
-(defn get-partials
-  "Gets a map of {:partial-name partial-content} recursively."
-  ([m] (get-partials m {} ""))
-  ([m partials] (get-partials m partials ""))
-  ([m partials incpath]
-    (let [p (find-partials m)
-          gp (fn [k] (if (get partials k) nil {k (get-template (name k) incpath)}))
-          found (if (empty? p) [] (filter not-nil? (map gp p)))
-          all (merge partials (reduce merge found))]
-      (reduce merge all (map #(get-partials (second (first %)) all) found)))))
-
-
-;; Mustache Utilities.....................................................................
+  (:use [clostache.parser :as parser]
+        [stache.dir]
+        [stache.helpers]
+        [stache.partials]))
 
 (defn mustache?
   "Check to see if the given arg is a mustache string"
@@ -108,7 +15,7 @@
   "Render the given mustache template with the data given.
    Finds partials automatically unless they are specified using:
    (render-template m data :partials {:name partial})"
-  [m data & {:keys [partials incpath]}]
+  [m data & {:keys [partials incpath] :or {partials {} incpath ""}}]
   (let [m (if (mustache? m) m (get-template m))
-        partials (get-partials m (or partials {}) (or incpath ""))]
+        partials (get-partials m partials incpath)]
     (parser/render m data partials)))

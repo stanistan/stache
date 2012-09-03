@@ -19,13 +19,27 @@
 
   ; All of these are in test/resources
 
-  (is (=
-    (render-template "simple" {:name "Stan"})
-    "Hi, Stan.\n")) ; empty lines at the end of files
+  (testing "looking for resources"
+    (is (=
+      (render-template "simple" {:name "Stan"})
+      "Hi, Stan.\n")) ; empty lines at the end of files
 
-  (is (=
-    (render-template "ps" {:name "Stan"})
-      "Oh You. Hi, Stan.\n\n")) ; empty lines at the end of files
+    (is (=
+      (render-template "ps" {:name "Stan"})
+        "Oh You. Hi, Stan.\n\n"))) ; empty lines at the end of files
 
-  (let [a (try (render-template "i/t" {} :incpath "i") (catch Exception e))]
-    (is (= a "All good in the hood.\n\n"))))
+  (testing "resource with partials"
+
+    (is (=
+      (render-template "i/t" {} :incpath "i")
+      "All good in the hood.\n\n"))
+
+    (is (=
+      (render-template "i/t" {} :incpath ["i"])
+      (render-template "t" {} :incpath "i")
+      (render-template "i/t" {} :incpath ["i" "a" "b" "c"]))))
+
+  (testing "not found thrown?"
+    (is (thrown? Exception (render-template "does-not-exist" {})))))
+
+

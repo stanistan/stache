@@ -20,19 +20,19 @@
 (defn get-template-resource
   ([m] (get-template-resource m ""))
   ([m incpath]
-    (let [incpath (prep-incpath incpath)]
-      (loop [p (first incpath)
-             r (rest incpath)]
-        (let [file-path (get-file-path m p)
-              re (io/resource file-path)]
-          (cond (not-nil? re) re
-                (empty? r) nil
-                :else (recur (first r) (rest r))))))))
+    (reduce
+      #(or %1 (io/resource (get-file-path m %2)))
+      nil
+      (prep-incpath incpath))))
+
+(defn- not-found
+  [m incpath]
+  (format "Template [%s] not found in incpath [%s]" m incpath))
 
 (defn get-template
   ([m] (get-template m ""))
   ([m incpath]
     (let [resource (get-template-resource m incpath)]
       (if (nil? resource)
-        (throw (Exception. (str "Mustache template not found [" m "]")))
+        (throw (Exception. (not-found m incpath)))
         (slurp resource)))))

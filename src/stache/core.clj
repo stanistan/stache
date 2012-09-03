@@ -16,6 +16,6 @@
    Finds partials automatically unless they are specified using:
    (render-template m data :partials {:name partial})"
   [m data & {:keys [partials incpath] :or {partials {} incpath ""}}]
-  (let [m (if (mustache? m) m (get-template m))
+  (let [m (if (mustache? m) m (get-template m incpath))
         partials (get-partials m partials incpath)]
     (parser/render m data partials)))

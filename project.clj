@@ -1,5 +1,5 @@
 (defproject stache "0.1"
-  :description "Stache for easier mustache temlates."
+  :description "Easier mustache templates."
   :url "https://github.com/stanistan/stache"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

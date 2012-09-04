@@ -13,7 +13,7 @@ The easiest way to add Stache to your project is using [clojars](https://clojars
 ##### leiningen
 
 ```clj
-[stache "0.1"]
+[stache "0.1.1"]
 ```
 
 ##### maven
@@ -22,7 +22,7 @@ The easiest way to add Stache to your project is using [clojars](https://clojars
 <dependency>
   <groupId>stache</groupId>
   <artifactId>stache</artifactId>
-  <version>0.1</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -64,7 +64,7 @@ if not found, an exception will be thrown.
 Stache will check for partials in the template (recursively) and render
 the template using clostache.
 
-In this scenario we are ssuming the template `mytemplate.mustche` exists:
+In this scenario we are assuming the template `mytemplate.mustache` exists:
 
 ```
 Let's pretend that this was parsed by {{name}}, and this is something from partials.

@@ -9,7 +9,7 @@
 (defn find-partials-in-template
   "Gets the defined partials in the current mustache string. Returns vector."
   [m]
-  (mapv #(keyword (second %)) (re-seq pattern m)))
+  (map #(keyword (second %)) (re-seq pattern m)))
 
 (defn- merge-partials-fn
   [partials incpath]

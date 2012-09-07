@@ -13,7 +13,7 @@ The easiest way to add Stache to your project is using [clojars](https://clojars
 ##### leiningen
 
 ```clj
-[stache "0.1.1"]
+[stache "0.1.2"]
 ```
 
 ##### maven
@@ -22,7 +22,7 @@ The easiest way to add Stache to your project is using [clojars](https://clojars
 <dependency>
   <groupId>stache</groupId>
   <artifactId>stache</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </dependency>
 ```
 

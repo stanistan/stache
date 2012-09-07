@@ -1,8 +1,8 @@
-(defproject stache "0.1.1"
-  :description "Easier mustache templates."
+(defproject stache "0.1.2"
+  :description "Easier {{ mustache }} templates."
   :url "https://github.com/stanistan/stache"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :resource-paths ["test/resources"]
+  :profiles {:test {:resource-paths ["test/resources"]}}
   :dependencies [[org.clojure/clojure "1.3.0"]
-                 [de.ubercode.clostache/clostache "1.3.0"]])
+                 [org.clojars.stanistan/clostache "1.4.0-dev"]])

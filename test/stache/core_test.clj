@@ -1,6 +1,7 @@
 (ns stache.core-test
   (:use clojure.test
-        stache.core))
+        stache.core
+        clostache.parser))
 
 (def temps
   {:simple "Hi, {{name}}."
@@ -38,6 +39,20 @@
       (render-template "i/t" {} :incpath ["i"])
       (render-template "t" {} :incpath "i")
       (render-template "i/t" {} :incpath ["i" "a" "b" "c"]))))
+
+  (testing "nested partials-stache"
+    (let [tmplate  "Oh {{>nest-one}}"
+          partials {:nest-one "This {{>nest-two}}"
+                    :nest-two "Is {{>nest-three}}"
+                    :nest-three "Nested"}]
+      (is (=
+        (render-template tmplate {} :partials partials)
+        (render tmplate {} partials) ))))
+
+  (testing "nested partials"
+    (is (=
+      (render-template "nested" {})
+      "Oh This Is Nested\n\n\n\n")))
 
   (testing "not found thrown?"
     (is (thrown? Exception (render-template "does-not-exist" {})))))

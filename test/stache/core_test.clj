@@ -57,4 +57,14 @@
   (testing "not found thrown?"
     (is (thrown? Exception (render-template "does-not-exist" {})))))
 
+(deftest make
+  ; Tests defparser
+  (defparser test-parser :path-to "templates-other" :suffix ".m")
+  ; (def test-parser (make-parser :path-to "templates-other" :suffix ".m"))
+
+  (testing "make-parser"
+    (is (=
+      (test-parser "simple" {:hello "Hi"})
+      "This is a test Hi.\n"))))
+
 

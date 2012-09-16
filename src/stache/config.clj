@@ -6,20 +6,24 @@
    :suffix ".mustache"})
 
 ; the resource path where mustache templates are
-(declare path-to-templates)
+(def path-to-templates (:path-to config-default))
 
 ; suffix used for the files
-(declare template-suffix)
+(def template-suffix (:suffix config-default))
 
-(defn- current-configuration
-  []
+(defn current-configuration []
   {:path-to path-to-templates
    :suffix template-suffix})
 
+(defn curr-path-to []
+  (:path-to (current-configuration)))
+
+(defn curr-suffix []
+  (:suffix (current-configuration)))
+
 (defn or-defaults
   [& {:keys [path-to suffix]
-      :or {path-to (:path-to current-configuration)
-           suffix (:suffix current-configuration)}}]
+      :or {path-to (curr-path-to) suffix (curr-suffix)}}]
   [path-to suffix])
 
 (defn config
@@ -36,6 +40,3 @@
   "Resets the settings to defaults."
   []
   (apply config (flatten (vec config-default))))
-
-; set up default bindings
-(reset-config)

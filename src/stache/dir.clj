@@ -7,8 +7,8 @@
   "Gets a resource path to the mustache file"
   ([m] (get-file-path m ""))
   ([m incpath]
-    (-> (prep-paths conf/path-to-templates incpath)
-      (str "/" m conf/template-suffix)
+    (-> (prep-paths (conf/curr-path-to) incpath)
+      (str "/" m (conf/curr-suffix))
       (prep-path))))
 
 (defn- prep-incpath
@@ -27,7 +27,11 @@
 
 (defn- not-found
   [m incpath]
-  (format "Template [%s] not found in incpath [%s]" m incpath))
+  (format
+    "Template [%s] not found in incpath [%s] in config: [%s]"
+    m
+    incpath
+    (conf/current-configuration)))
 
 (defn get-template
   ([m] (get-template m ""))

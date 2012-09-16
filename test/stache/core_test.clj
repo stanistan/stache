@@ -58,13 +58,20 @@
     (is (thrown? Exception (render-template "does-not-exist" {})))))
 
 (deftest make
+
   ; Tests defparser
   (defparser test-parser :path-to "templates-other" :suffix ".m")
-  ; (def test-parser (make-parser :path-to "templates-other" :suffix ".m"))
 
-  (testing "make-parser"
+  (testing "test-parser"
     (is (=
       (test-parser "simple" {:hello "Hi"})
-      "This is a test Hi.\n"))))
+      "This is a test Hi.\n")))
+
+  (defparser default-parser)
+
+  (testing "default-parser"
+    (is (=
+      (default-parser "ps" {:name "Stan"})
+      (render-template "ps" {:name "Stan"})))))
 
 

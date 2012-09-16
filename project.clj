@@ -1,4 +1,4 @@
-(defproject stache "0.1.2"
+(defproject stache "0.2.0"
   :description "Easier {{ mustache }} templates."
   :url "https://github.com/stanistan/stache"
   :license {:name "Eclipse Public License"

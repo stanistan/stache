@@ -13,7 +13,7 @@ The easiest way to add Stache to your project is using [clojars](https://clojars
 ##### leiningen
 
 ```clj
-[stache "0.1.2"]
+[stache "0.2.0"]
 ```
 
 ##### maven
@@ -22,7 +22,7 @@ The easiest way to add Stache to your project is using [clojars](https://clojars
 <dependency>
   <groupId>stache</groupId>
   <artifactId>stache</artifactId>
-  <version>0.1.2</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
@@ -98,7 +98,7 @@ Let's pretend that this was parsed by {{name}}, and this is something from parti
 - ~~Fix loading of partials with relative paths to the main template.~~
 - ~~Write more tests for changing configs and usage.~~
 - Disallow `/` in partial names.
-- Instead of using config have `(make-parser)` return a parser mustache function to reduce state deps.
+- ~~Instead of using config have `(make-parser)` return a parser mustache function to reduce state deps.~~
 - Allow for changing of delimiters currently, only `{{}}` is supported.
 
 ## License

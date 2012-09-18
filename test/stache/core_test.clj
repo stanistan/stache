@@ -54,6 +54,11 @@
       (render-template "nested" {})
       "Oh This Is Nested\n\n\n\n")))
 
+  (testing "nested with incpath"
+    (is (=
+      (render-template "main" {} :incpath "incpath")
+      "Test Successful Recursive\n\n\n")))
+
   (testing "not found thrown?"
     (is (thrown? Exception (render-template "does-not-exist" {})))))
 

@@ -27,4 +27,4 @@
           gp (merge-partials-fn partials incpath)
           found (if (empty? p) [] (filter not-nil? (map gp p)))
           all (merge partials (reduce merge found))]
-      (reduce merge all (map #(get-partials (second (first %)) all) found)))))
+      (reduce merge all (map #(get-partials (second (first %)) all incpath) found)))))

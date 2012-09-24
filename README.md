@@ -1,4 +1,5 @@
-# stache
+# stache [![Build Status](https://secure.travis-ci.org/stanistan/stache.png)](http://travis-ci.org/stanistan/stache)
+
 
 Automatically load your mustache templates!
 
